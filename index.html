@@ -34,8 +34,15 @@
 			var camera, scene, renderer;
 
 			var group, text;
+			
+      for (var i = 0; i < 31; i += 0.1) {
+      	setTimeout(function(x) { return function() { 
+          var i = Math.floor( i * 1000 ) / 1000;
+      	}; }(i), 1000);
+          console.log(i);
+      }
 
-			var targetRotation = 0;
+			var targetRotation = i;
 			var targetRotationOnMouseDown = 0;
 
 			var mouseX = 0;
@@ -61,7 +68,7 @@
 				container.appendChild( info );
 
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.set( 0, 150, 500 );
+				camera.position.set( 0, 150, 450 );
 
 				scene = new THREE.Scene();
 
@@ -77,9 +84,18 @@
 
 				}
 
+				var mq = window.matchMedia( "(min-width: 600px)" ), textSize;
+
+				if (mq.matches) {
+					textSize = 40;
+				}
+				else {
+					textSize = 20;
+				}
+
 				var text3d = new THREE.TextGeometry( theText, {
 
-					size: 50,
+					size: textSize,
 					height: 20,
 					curveSegments: 2,
 					font: "helvetiker"
@@ -89,14 +105,18 @@
 				text3d.computeBoundingBox();
 				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 
-				var textMaterial = new THREE.MeshNormalMaterial( { color: Math.random() * 0xffffff, overdraw: 0.5 } );
+				var textMaterial = new THREE.MeshNormalMaterial( { color: Math.random() * 0xffffff, overdraw: 0.8 } );
 				text = new THREE.Mesh( text3d, textMaterial );
 
 				text.position.x = centerOffset;
+				
+				// up and down
 				text.position.y = 100;
 				text.position.z = 0;
 
-				text.rotation.x = 0;
+
+				// v
+				text.rotation.x = 50;
 				text.rotation.y = Math.PI * 2;
 
 				group = new THREE.Group();
@@ -151,7 +171,8 @@
 
 				mouseX = event.clientX - windowHalfX;
 
-				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
+				// controls mousemove power
+				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.05;
 
 			}
 
@@ -209,7 +230,8 @@
 
 			function render() {
 
-				group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
+				// starting rotation speed .0005
+				group.rotation.y += ( targetRotation - group.rotation.y ) * 0.0001;
 				renderer.render( scene, camera );
 
 			}
